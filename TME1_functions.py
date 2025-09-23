@@ -8,6 +8,9 @@ Respect the syntax "firstname_lastname"
 student_name = ["firstname_lastname1", "firstname_lastname_2"]
 
 
+# name for file: TME1_functions_6.py
+
+
 # Paste here all the function you implemented in the TME1 notebook
 # Exercise 1
 def _ket(lst: list) -> 'ndlist':
