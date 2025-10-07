@@ -1,7 +1,7 @@
 from ndlists import ndlist
 from typing import List
 
-
+from math import cos, sin, sqrt, pi
 
 """
 Replace with your name and the one of your working partner, otherwise you won't be evaluated
