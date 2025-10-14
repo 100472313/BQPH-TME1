@@ -1,7 +1,7 @@
 import ndlists as nd
 
 # import TME1_functions as tme1  # Uncomment and change the module name if you have TME1 functions from your previous work or solutions. YOU NEED TO UNCOMMENT THIS LINE TO USE TME1 FUNCTIONS
-import TME1.TME1_functions_solution as tme1  # Using the provided solutions for TME1 functions
+import TME1_functions_solution as tme1  # Using the provided solutions for TME1 functions
 
 from math import sqrt, pi, cos, sin, tan, exp
 from typing import List
