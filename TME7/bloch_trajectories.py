@@ -78,7 +78,11 @@ def phase_damping(r: np.ndarray, t: float, T2: float) -> np.ndarray:
     :param T2: phase damping time constant
     :return: new Bloch vector after phase damping
     """
-    pass
+    x, y, z = r
+    new_x = np.exp(-t / T2) * x
+    new_y = np.exp(-t / T2) * y
+    new_z = z
+    return np.array([new_x, new_y, new_z], dtype=float)
 
 
 def amplitude_damping(r: np.ndarray, t: float, T1: float) -> np.ndarray:
@@ -89,7 +93,11 @@ def amplitude_damping(r: np.ndarray, t: float, T1: float) -> np.ndarray:
     :param T1: amplitude damping time constant
     :return: new Bloch vector after amplitude damping
     """
-    pass
+    x, y, z = r
+    new_x = np.exp(-t / (2 * T1)) * x
+    new_y = np.exp(-t / (2 * T1)) * y
+    new_z = np.exp(-t / T1) * z + (1 - np.exp(-t / T1))
+    return np.array([new_x, new_y, new_z], dtype=float)
 
 
 def depolarizing_noise(r: np.ndarray, p: float) -> np.ndarray:
@@ -99,7 +107,8 @@ def depolarizing_noise(r: np.ndarray, p: float) -> np.ndarray:
     :param p: depolarizing probability
     :return: new Bloch vector after depolarizing noise
     """
-    pass
+    new_r = (1 - p) * r
+    return new_r
 
 
 # --- Define line styles for different channels ---
