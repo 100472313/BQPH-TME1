@@ -151,38 +151,36 @@ def generate_trajectory(gate, channel, r0, time_steps, use_time=True, p_0=0.0, *
     r = r0
     for t in time_steps[1:]:
         if channel == 0:
-            i = random.randint(0,2)
-            pauli = paulis[i]
-            if random.random() < p_0:
-                r = rho_to_bloch(pauli @ gate  @ bloch_to_rho(r) @ gate.conj().T @ pauli.conj().T)
-            else:
-                r = rho_to_bloch(I @ gate  @ bloch_to_rho(r) @ gate.conj().T @ I)
+            r = (1-p_0) * rho_to_bloch(I @ gate  @ bloch_to_rho(r) @ gate.conj().T @ I)
+            r += (p_0 / 3) * rho_to_bloch(X @ gate  @ bloch_to_rho(r) @ gate.conj().T @ X)
+            r += (p_0 / 3) * rho_to_bloch(Y @ gate  @ bloch_to_rho(r) @ gate.conj().T @ Y)
+            r += (p_0 / 3) * rho_to_bloch(Z @ gate  @ bloch_to_rho(r) @ gate.conj().T @ Z)
 
         elif channel == 1:
             K_0 = np.sqrt(1-p_0) * I
             K_1 = np.sqrt(p_0) * (ket0 @ ket0.conj().T)
             K_2 = np.sqrt(p_0) * (ket1 @ ket1.conj().T)
             Ks = [K_0, K_1, K_2]
+            count = 0
             for i in Ks:
-                r = rho_to_bloch(i @ gate @ bloch_to_rho(r) @ gate.conj().T @ i.conj().T)
+                if count == 0:
+                    r = rho_to_bloch(i @ gate @ bloch_to_rho(r) @ gate.conj().T @ i.conj().T)
+                else:
+                    r += rho_to_bloch(i @ gate @ bloch_to_rho(r) @ gate.conj().T @ i.conj().T)
+                count+=1
         else:
             K_0 = np.array([[1,0],[0, np.sqrt(1-p_0)]])
             K_1 = np.array([[0,np.sqrt(p_0)],[0, 0]])
             Ks = [K_0, K_1]
+            count = 0
             for i in Ks:
-                r = rho_to_bloch(i @ gate @ bloch_to_rho(r) @ gate.conj().T @ i.conj().T)
+                if count == 0:
+                    r = rho_to_bloch(i @ gate @ bloch_to_rho(r) @ gate.conj().T @ i.conj().T)
+                else:
+                    r += rho_to_bloch(i @ gate @ bloch_to_rho(r) @ gate.conj().T @ i.conj().T)
+                count+=1
         trajectory.append(r)
     return np.array(trajectory)
-
-
-    """for t in time_steps[1:]:
-        if use_time:
-            r = channel_func(r, t, **kwargs)  # channels needing time
-        else:
-            r = channel_func(r, **kwargs)  # channels without time
-        trajectory.append(r)
-
-    return np.array(trajectory)"""
 
 
 # --- Plotting function for trajectories ---
@@ -289,15 +287,15 @@ if __name__ == "__main__":
     trajectories = []
     for r0, color in zip(r0_list_normalized, vector_colors):
 
-        traj_phase = generate_trajectory(X, 0, r0, time_steps, use_time=True, T2=2.0, p_0=0.02)
-        trajectories.append((traj_phase, 'Depolarizing Noise', color, CHANNEL_STYLES["Depolarizing Noise"]))
+        traj_depolarizing = generate_trajectory(X, 0, r0, time_steps, p_0=0.02)
+        trajectories.append((traj_depolarizing, 'Depolarizing Noise', color, CHANNEL_STYLES["Depolarizing Noise"]))
 
-        traj_amplitude = generate_trajectory(X, 1, r0, time_steps, use_time=True, T1=3.0)
-        trajectories.append((traj_amplitude, 'Phase Damping', color, CHANNEL_STYLES["Phase Damping"]))
+        traj_phase = generate_trajectory(X, 1, r0, time_steps, p_0=0.02)
+        trajectories.append((traj_phase, 'Phase Damping', color, CHANNEL_STYLES["Phase Damping"]))
 
 
-        traj_depolarizing = generate_trajectory(X, 2, r0, time_steps, use_time=False, p=0.1)
-        trajectories.append((traj_depolarizing, 'Amplitude Damping', color, CHANNEL_STYLES["Amplitude Damping"]))
+        traj_amplitude = generate_trajectory(X, 2, r0, time_steps, p_0=0.02)
+        trajectories.append((traj_amplitude, 'Amplitude Damping', color, CHANNEL_STYLES["Amplitude Damping"]))
 
     plot_trajectories(
         trajectories, time_steps,
